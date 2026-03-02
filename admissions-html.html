@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admissions Command Center — AY 2025-26</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+.header{background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:18px 24px;color:#fff}
+.header-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.header h1{font-size:20px;font-weight:700}
+.header .sub{font-size:12px;color:#93c5fd;margin-top:3px}
+.header .sub strong{color:#fff}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;color:#fff;transition:opacity .15s}
+.btn:hover{opacity:.88}
+.btn-green{background:#22c55e}.btn-amber{background:#f59e0b}.btn-gray{background:#64748b}.btn-indigo{background:#6366f1}.btn-blue{background:#3b82f6}
+.btn-sm{padding:4px 10px;border-radius:6px;font-size:11px}
+.tabs{display:flex;gap:4px;margin-top:14px;flex-wrap:wrap}
+.tab{padding:7px 15px;border-radius:8px 8px 0 0;border:none;cursor:pointer;font-size:13px;font-weight:600;background:rgba(255,255,255,.1);color:#93c5fd;transition:all .15s}
+.tab.active{background:#fff;color:#1e3a5f}
+.body{padding:18px 24px;max-width:1280px;margin:0 auto}
+.card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:14px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.stat-card{border-left:4px solid;padding:14px 16px;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.stat-label{font-size:11px;color:#64748b;text-transform:uppercase;font-weight:600;letter-spacing:.3px}
+.stat-val{font-size:24px;font-weight:700;margin-top:4px}
+.two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.progress-bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width .4s}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;display:inline-block}
+.month-btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.month-btn{padding:5px 12px;border-radius:8px;border:1px solid #d1d5db;background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:#475569;transition:all .15s}
+.month-btn.active{border:2px solid #3b82f6;background:#eff6ff;color:#3b82f6}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:#f8fafc}
+th{padding:8px 10px;text-align:center;border-bottom:2px solid #e2e8f0;font-size:12px;font-weight:700}
+th:first-child{text-align:left}
+td{padding:8px 10px;text-align:center;border-bottom:1px solid #f1f5f9}
+td:first-child{text-align:left;font-weight:600}
+tr.total-row{background:#f8fafc;font-weight:700}
+.editable{cursor:pointer;padding:5px 8px;border-radius:4px;min-width:36px;display:inline-block;font-weight:700;transition:background .15s}
+.editable:hover{filter:brightness(.92)}
+.editable-target{color:#3b82f6;background:#eff6ff}
+.editable-achieved{color:#22c55e;background:#f0fdf4}
+.edit-input{width:52px;padding:4px 6px;border-radius:4px;font-size:13px;text-align:center;outline:none}
+.edit-target{border:2px solid #3b82f6}.edit-achieved{border:2px solid #22c55e}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+.avatar-lg{width:48px;height:48px;font-size:18px}
+.counselor-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:10px;cursor:pointer;transition:box-shadow .15s}
+.counselor-row:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.flex-1{flex:1;min-width:120px}
+.hint{font-size:11px;color:#64748b;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal{background:#fff;border-radius:16px;padding:24px;width:92%;max-width:480px;max-height:85vh;overflow:auto}
+.modal h3{margin-bottom:14px}
+.form-group{margin-bottom:12px}
+.form-group label{font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px}
+.form-group select,.form-group textarea,.form-group input{width:100%;padding:9px 12px;border-radius:8px;border:1px solid #d1d5db;font-size:13px;font-family:inherit}
+.form-group textarea{resize:vertical;height:80px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.preview-box{background:#f8fafc;border-radius:8px;padding:12px;font-size:12px;color:#475569;line-height:1.7;white-space:pre-line;margin-bottom:12px}
+.toast{position:fixed;top:16px;right:16px;background:#22c55e;color:#fff;padding:10px 18px;border-radius:10px;font-weight:600;font-size:13px;z-index:2000;box-shadow:0 4px 12px rgba(34,197,94,.3);animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.reminder-card{border-left:4px solid #6366f1;padding:14px 16px;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:10px}
+.reminder-header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.reminder-type{display:inline-block;margin-top:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:#ede9fe;color:#6366f1}
+.reminder-msg{font-size:12px;color:#475569;margin-top:6px;line-height:1.6;white-space:pre-line}
+.leaderboard-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+.leaderboard-row:last-child{border-bottom:none}
+.medal{width:32px;text-align:center;font-weight:700}
+.filter-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ecole-tag{font-size:10px;background:#ede9fe;color:#6366f1;padding:1px 6px;border-radius:4px;margin-left:4px}
+.hidden{display:none}
+select.filter-select{padding:8px 12px;border-radius:8px;border:1px solid #d1d5db;font-size:13px;background:#fff}
+.counselor-input-card{margin-bottom:16px}
+.counselor-input-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.counselor-info{display:flex;align-items:center;gap:10px}
+.counselor-meta{font-size:11px;color:#94a3b8}
+.empty-state{text-align:center;padding:36px;color:#94a3b8}
+.empty-state .icon{font-size:40px;margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+const MONTHS = ["Jan","Feb","March","April","May","June","July","August"];
+const MONTH_TARGETS_MAIN = {Jan:10,Feb:15,March:20,April:25,May:40,June:40,July:35,August:25};
+const MONTH_TARGETS_ECOLE = {Jan:0,Feb:8,March:10,April:12,May:18,June:20,July:18,August:14};
+const WEEKS_MAP = {Jan:4,Feb:4,March:5,April:4,May:5,June:4,July:5,August:4};
+
+const COUNSELORS = [
+  {id:"c1",name:"Projaini",avatar:"PR",group:"main",totalTarget:210},
+  {id:"c2",name:"Aditi",avatar:"AD",group:"main",totalTarget:210},
+  {id:"c3",name:"Moumita",avatar:"MO",group:"main",totalTarget:210},
+  {id:"c4",name:"Riya",avatar:"RI",group:"main",totalTarget:210},
+  {id:"c5",name:"Mampi",avatar:"MA",group:"main",totalTarget:210},
+  {id:"c6",name:"Hritika",avatar:"HR",group:"main",totalTarget:210},
+  {id:"c7",name:"Amit",avatar:"AM",group:"main",totalTarget:210},
+  {id:"c8",name:"Robert (Ecole)",avatar:"RO",group:"ecole",totalTarget:100}
+];
+
+let state = {
+  tab: "input",
+  selMonth: "March",
+  selCounselor: "all",
+  weeklyData: {},
+  reminders: [],
+  editCell: null,
+  editVal: "",
+  showRemindModal: null,
+  reminderType: "performance",
+  customMsg: "",
+  detailC: null,
+  toast: null
+};
+
+function distributeTarget(total, weeks) {
+  if (!total) return Array(weeks).fill(0);
+  const base = Math.floor(total / weeks);
+  const rem = total % weeks;
+  return Array.from({length:weeks}, (_,i) => base + (i < rem ? 1 : 0));
+}
+
+function initData() {
+  const d = {};
+  COUNSELORS.forEach(c => {
+    d[c.id] = {};
+    const mt = c.group === "ecole" ? MONTH_TARGETS_ECOLE : MONTH_TARGETS_MAIN;
+    MONTHS.forEach(m => {
+      const w = WEEKS_MAP[m];
+      const wt = distributeTarget(mt[m], w);
+      d[c.id][m] = Array.from({length:w}, (_,i) => ({weekNum:i+1, target:wt[i], achieved:0}));
+    });
+  });
+  state.weeklyData = d;
+}
+
+function pctColor(p) { return p>=90?"#22c55e":p>=70?"#84cc16":p>=50?"#f59e0b":p>=25?"#f97316":"#ef4444"; }
+function avatarGrad(p) { return `linear-gradient(135deg,${pctColor(p)},#6366f1)`; }
+function badgeHTML(p) {
+  const c = p>=90?{bg:"#dcfce7",fg:"#16a34a",t:"On Track"}:p>=70?{bg:"#fef9c3",fg:"#a16207",t:"Needs Push"}:p>=50?{bg:"#ffedd5",fg:"#c2410c",t:"Behind"}:{bg:"#fee2e2",fg:"#dc2626",t:"Critical"};
+  return `<span class="badge" style="background:${c.bg};color:${c.fg}">${c.t}</span>`;
+}
+function progressHTML(pct, h=8) {
+  return `<div class="progress-bar" style="height:${h}px"><div class="progress-fill" style="width:${Math.min(pct,100)}%;background:${pctColor(pct)}"></div></div>`;
+}
+
+function getStats(cId) {
+  const cd = state.weeklyData[cId]; if(!cd) return {totalTarget:0,totalAchieved:0,pct:0,monthStats:{}};
+  let tT=0,tA=0; const ms={};
+  MONTHS.forEach(m => { const w=cd[m]||[]; const mT=w.reduce((s,x)=>s+x.target,0); const mA=w.reduce((s,x)=>s+x.achieved,0); tT+=mT; tA+=mA; ms[m]={target:mT,achieved:mA,pct:mT?(mA/mT*100):0}; });
+  return {totalTarget:tT,totalAchieved:tA,pct:tT?(tA/tT*100):0,monthStats:ms};
+}
+
+function showToast(msg) { state.toast=msg; render(); setTimeout(()=>{state.toast=null;render();},3000); }
+
+function handleCellClick(cId,month,wIdx,field) {
+  state.editCell=`${cId}-${month}-${wIdx}-${field}`;
+  state.editVal=String(state.weeklyData[cId][month][wIdx][field]);
+  render();
+  setTimeout(()=>{const inp=document.getElementById('edit-input');if(inp){inp.focus();inp.select();}},10);
+}
+
+function handleCellSave() {
+  if(!state.editCell) return;
+  const [cId,month,wIdx,field] = state.editCell.split(/-(.+?)-(\d+)-(.+)/);
+  const parts = state.editCell.match(/^(.+?)-(.+?)-(\d+)-(.+)$/);
+  if(!parts) return;
+  const val = Math.max(0, parseInt(state.editVal)||0);
+  state.weeklyData[parts[1]][parts[2]][parseInt(parts[3])][parts[4]] = val;
+  state.editCell=null;
+  render();
+}
+
+function handleCellKeyDown(e) {
+  if(e.key==="Enter") handleCellSave();
+  if(e.key==="Escape"){state.editCell=null;render();}
+}
+
+function sendReminder(c) {
+  const st=getStats(c.id); const ms=st.monthStats[state.selMonth]||{target:0,achieved:0,pct:0};
+  const templates = {
+    performance:`Hi ${c.name},\n\nWeekly Performance Summary:\n• ${state.selMonth} Target: ${ms.target} | Achieved: ${ms.achieved} (${ms.pct.toFixed(0)}%)\n• Overall: ${st.totalAchieved}/${st.totalTarget} (${st.pct.toFixed(0)}%)\n• Gap: ${st.totalTarget-st.totalAchieved} remaining\n\nPlease prioritize pending follow-ups.\n\n— Admissions Head`,
+    followup:`Hi ${c.name},\n\nYou are at ${ms.pct.toFixed(0)}% of your ${state.selMonth} target (${ms.achieved}/${ms.target}). ${ms.target-ms.achieved} remaining.\n\nPlease clear your pipeline.\n\n— Admissions Head`,
+    target:`Hi ${c.name},\n\nOverall achievement: ${st.pct.toFixed(0)}% (${st.totalAchieved}/${st.totalTarget}). ${st.pct<70?"Needs urgent attention.":"Keep pushing."}\n\n— Admissions Head`,
+    custom: state.customMsg
+  };
+  state.reminders.unshift({id:Date.now(),to:c.name,type:state.reminderType,message:templates[state.reminderType],sentAt:new Date().toLocaleString()});
+  state.showRemindModal=null; state.reminderType="performance"; state.customMsg="";
+  showToast(`📧 Reminder sent to ${c.name}`);
+}
+
+function sendBulk() {
+  COUNSELORS.forEach(c => {
+    const st=getStats(c.id); const ms=st.monthStats[state.selMonth]||{};
+    state.reminders.unshift({id:Date.now()+Math.random(),to:c.name,type:"performance",message:`Hi ${c.name}, ${state.selMonth}: ${ms.achieved||0}/${ms.target||0} (${(ms.pct||0).toFixed(0)}%) | Overall: ${st.totalAchieved}/${st.totalTarget} (${st.pct.toFixed(0)}%). Update pipeline.`,sentAt:new Date().toLocaleString()});
+  });
+  showToast(`📧 Sent to all ${COUNSELORS.length} counselors`);
+}
+
+function resetData() { initData(); showToast("Data reset to defaults"); }
+
+function renderInputTab() {
+  const m = state.selMonth;
+  const list = state.selCounselor==="all" ? COUNSELORS : COUNSELORS.filter(c=>c.id===state.selCounselor);
+
+  let monthBtns = MONTHS.map(mo => `<button class="month-btn ${mo===m?'active':''}" onclick="state.selMonth='${mo}';render()">${mo}</button>`).join("");
+  let counselorOpts = COUNSELORS.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+
+  let cards = list.map(c => {
+    const weeks = state.weeklyData[c.id]?.[m] || [];
+    const mT = weeks.reduce((s,w)=>s+w.target,0);
+    const mA = weeks.reduce((s,w)=>s+w.achieved,0);
+    const mP = mT?(mA/mT*100):0;
+
+    let rows = weeks.map((w,i) => {
+      const gap = w.target - w.achieved;
+      const wP = w.target?(w.achieved/w.target*100):0;
+      const tKey = `${c.id}-${m}-${i}-target`;
+      const aKey = `${c.id}-${m}-${i}-achieved`;
+
+      const tCell = state.editCell===tKey
+        ? `<input id="edit-input" class="edit-input edit-target" type="number" min="0" value="${state.editVal}" oninput="state.editVal=this.value" onblur="handleCellSave()" onkeydown="handleCellKeyDown(event)">`
+        : `<div class="editable editable-target" onclick="handleCellClick('${c.id}','${m}',${i},'target')" title="Click to edit">${w.target}</div>`;
+
+      const aCell = state.editCell===aKey
+        ? `<input id="edit-input" class="edit-input edit-achieved" type="number" min="0" value="${state.editVal}" oninput="state.editVal=this.value" onblur="handleCellSave()" onkeydown="handleCellKeyDown(event)">`
+        : `<div class="editable editable-achieved" onclick="handleCellClick('${c.id}','${m}',${i},'achieved')" title="Click to edit">${w.achieved}</div>`;
+
+      const gapStr = gap>0?`<span style="color:#ef4444;font-weight:700">-${gap}</span>`:gap===0?`<span style="color:#94a3b8">—</span>`:`<span style="color:#22c55e;font-weight:700">+${Math.abs(gap)}</span>`;
+      const pctStr = w.target?`<span style="color:${pctColor(wP)};font-weight:700">${wP.toFixed(0)}%</span>`:`—`;
+
+      return `<tr><td>W${w.weekNum}</td><td>${tCell}</td><td>${aCell}</td><td>${gapStr}</td><td>${pctStr}</td><td>${progressHTML(wP,7)}</td></tr>`;
+    }).join("");
+
+    const totalGap = mT-mA;
+    const totalGapStr = totalGap>0?`<span style="color:#ef4444">-${totalGap}</span>`:totalGap===0?`—`:`<span style="color:#22c55e">+${Math.abs(totalGap)}</span>`;
+
+    return `
+    <div class="card counselor-input-card">
+      <div class="counselor-input-header">
+        <div class="counselor-info">
+          <div class="avatar" style="background:${avatarGrad(mP)}">${c.avatar}</div>
+          <div>
+            <span style="font-weight:700;font-size:14px">${c.name}</span>${c.group==="ecole"?'<span class="ecole-tag">ECOLE</span>':""}
+            <div class="counselor-meta">${m}: ${mA}/${mT} (${mP.toFixed(0)}%)</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${badgeHTML(mP)}
+          <button class="btn btn-indigo btn-sm" onclick="state.showRemindModal=COUNSELORS.find(x=>x.id==='${c.id}');render()">📧</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th style="text-align:left">Week</th><th style="color:#3b82f6">🎯 Target</th><th style="color:#22c55e">✅ Achieved</th><th>Gap</th><th>%</th><th style="min-width:80px">Progress</th></tr></thead>
+          <tbody>${rows}
+          <tr class="total-row"><td>TOTAL</td><td style="color:#3b82f6">${mT}</td><td style="color:#22c55e">${mA}</td><td>${totalGapStr}</td><td style="color:${pctColor(mP)}">${mP.toFixed(0)}%</td><td>${progressHTML(mP,7)}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join("");
+
+  return `
+  <div class="card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span style="font-weight:600;font-size:13px">Month:</span>
+    <div class="month-btns">${monthBtns}</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <span style="font-size:12px;font-weight:600;color:#64748b">Counselor:</span>
+      <select class="filter-select" onchange="state.selCounselor=this.value;render()">
+        <option value="all" ${state.selCounselor==="all"?"selected":""}>All Counselors</option>
+        ${counselorOpts}
+      </select>
+    </div>
+  </div>
+  <div class="hint">💡 <em>Click any <strong style="color:#3b82f6">Target</strong> or <strong style="color:#22c55e">Achieved</strong> cell to edit. Press Enter to save, Escape to cancel.</em></div>
+  ${cards}`;
+}
+
+function renderOverview() {
+  let tT=0,tA=0;
+  COUNSELORS.forEach(c=>{const s=getStats(c.id);tT+=s.totalTarget;tA+=s.totalAchieved;});
+  const oP=tT?(tA/tT*100):0;
+
+  const stats = [
+    {l:"Annual Target",v:tT,c:"#3b82f6",i:"🎯"},{l:"Total Achieved",v:tA,c:"#22c55e",i:"✅"},
+    {l:"Remaining",v:tT-tA,c:"#ef4444",i:"⏳"},{l:"Overall %",v:oP.toFixed(1)+"%",c:pctColor(oP),i:"📈"}
+  ].map(s=>`<div class="stat-card" style="border-color:${s.c}"><div class="stat-label">${s.i} ${s.l}</div><div class="stat-val" style="color:${s.c}">${s.v}</div></div>`).join("");
+
+  let monthRows = MONTHS.map(m=>{
+    let mT=0,mA=0;
+    COUNSELORS.forEach(c=>{const w=state.weeklyData[c.id]?.[m]||[];mT+=w.reduce((s,x)=>s+x.target,0);mA+=w.reduce((s,x)=>s+x.achieved,0);});
+    const p=mT?(mA/mT*100):0;
+    return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">${m}</span><span style="color:${pctColor(p)}">${mA}/${mT} (${p.toFixed(0)}%)</span></div>${progressHTML(p)}</div>`;
+  }).join("");
+
+  let counselorRows = COUNSELORS.map(c=>{
+    const st=getStats(c.id);
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div class="avatar" style="width:28px;height:28px;font-size:9px;background:${avatarGrad(st.pct)}">${c.avatar}</div>
+      <div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span style="font-weight:600">${c.name}</span><span style="color:${pctColor(st.pct)}">${st.totalAchieved}/${st.totalTarget} (${st.pct.toFixed(0)}%)</span></div>${progressHTML(st.pct,6)}</div>
+      ${badgeHTML(st.pct)}
+    </div>`;
+  }).join("");
+
+  return `<div class="stat-grid">${stats}</div>
+  <div class="two-col">
+    <div class="card"><h3 style="margin-bottom:14px;font-size:15px">📅 Monthly Breakdown</h3>${monthRows}</div>
+    <div class="card"><h3 style="margin-bottom:14px;font-size:15px">👥 Counselor Summary</h3>${counselorRows}</div>
+  </div>`;
+}
+
+function renderCounselors() {
+  if(state.detailC) {
+    const c=state.detailC; const st=getStats(c.id);
+    let rows=MONTHS.map(m=>{
+      const ms=st.monthStats[m]; const gap=ms.target-ms.achieved;
+      const gStr=gap>0?`<span style="color:#ef4444;font-weight:700">-${gap}</span>`:gap===0?"—":`<span style="color:#22c55e;font-weight:700">+${Math.abs(gap)}</span>`;
+      return `<tr><td>${m}</td><td>${ms.target}</td><td style="font-weight:700;color:#22c55e">${ms.achieved}</td><td>${gStr}</td><td style="font-weight:700;color:${pctColor(ms.pct)}">${ms.pct.toFixed(0)}%</td><td>${progressHTML(ms.pct)}</td><td>${badgeHTML(ms.pct)}</td></tr>`;
+    }).join("");
+    const tGap=st.totalTarget-st.totalAchieved;
+    return `
+    <button class="btn btn-gray" style="margin-bottom:12px" onclick="state.detailC=null;render()">← Back</button>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar avatar-lg" style="background:linear-gradient(135deg,#3b82f6,#6366f1)">${c.avatar}</div>
+          <div><h2 style="font-size:18px">${c.name} ${c.group==="ecole"?'<span class="ecole-tag">ECOLE</span>':""}</h2><p style="font-size:12px;color:#64748b;margin-top:2px">Annual Target: ${c.totalTarget}</p></div>
+        </div>
+        <button class="btn btn-indigo" onclick="state.showRemindModal=COUNSELORS.find(x=>x.id==='${c.id}');render()">📧 Send Reminder</button>
+      </div>
+      <table><thead><tr><th style="text-align:left">Month</th><th>Target</th><th>Achieved</th><th>Gap</th><th>%</th><th style="min-width:100px">Progress</th><th>Status</th></tr></thead>
+      <tbody>${rows}
+      <tr class="total-row"><td>TOTAL</td><td>${st.totalTarget}</td><td style="color:#22c55e">${st.totalAchieved}</td><td>${tGap>0?`<span style="color:#ef4444">-${tGap}</span>`:"✓"}</td><td style="color:${pctColor(st.pct)}">${st.pct.toFixed(0)}%</td><td colspan="2"></td></tr>
+      </tbody></table>
+    </div>`;
+  }
+  return COUNSELORS.map(c=>{
+    const st=getStats(c.id);
+    return `<div class="counselor-row" onclick="state.detailC=COUNSELORS.find(x=>x.id==='${c.id}');render()">
+      <div class="avatar" style="width:40px;height:40px;font-size:12px;background:${avatarGrad(st.pct)}">${c.avatar}</div>
+      <div class="flex-1"><div style="font-weight:700;font-size:14px">${c.name} ${c.group==="ecole"?'<span class="ecole-tag">ECOLE</span>':""}</div><div style="font-size:11px;color:#64748b">Overall: ${st.totalAchieved}/${st.totalTarget} (${st.pct.toFixed(0)}%)</div></div>
+      <div style="width:120px">${progressHTML(st.pct)}</div>
+      ${badgeHTML(st.pct)}
+      <button class="btn btn-indigo btn-sm" onclick="event.stopPropagation();state.showRemindModal=COUNSELORS.find(x=>x.id==='${c.id}');render()">📧</button>
+    </div>`;
+  }).join("");
+}
+
+function renderLeaderboard() {
+  const sorted=[...COUNSELORS].sort((a,b)=>getStats(b.id).pct-getStats(a.id).pct);
+  let rows=sorted.map((c,i)=>{
+    const st=getStats(c.id);
+    const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":`<span style="color:#94a3b8;font-size:15px">#${i+1}</span>`;
+    return `<div class="leaderboard-row">
+      <span class="medal" style="font-size:${i<3?22:15}px">${medal}</span>
+      <div class="avatar" style="width:34px;height:34px;font-size:11px;background:${avatarGrad(st.pct)}">${c.avatar}</div>
+      <div style="flex:1"><div style="font-weight:700;font-size:13px">${c.name}</div><div style="font-size:11px;color:#64748b">${st.totalAchieved}/${st.totalTarget}</div></div>
+      <div style="width:120px">${progressHTML(st.pct,9)}</div>
+      <span style="font-weight:700;font-size:15px;color:${pctColor(st.pct)};min-width:45px;text-align:right">${st.pct.toFixed(0)}%</span>
+    </div>`;
+  }).join("");
+  return `<div class="card"><h3 style="margin-bottom:14px;font-size:16px">🏆 Counselor Leaderboard — Overall %</h3>${rows}</div>`;
+}
+
+function renderReminders() {
+  let cards = state.reminders.length===0
+    ? `<div class="card empty-state"><div class="icon">📭</div><p>No reminders yet.</p></div>`
+    : state.reminders.map(r=>`<div class="reminder-card"><div class="reminder-header"><strong>${r.to}</strong><span style="font-size:11px;color:#94a3b8">${r.sentAt}</span></div><span class="reminder-type">${r.type.toUpperCase()}</span><p class="reminder-msg">${r.message}</p></div>`).join("");
+  return `
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+    <h3 style="font-size:15px">📧 Reminder Log (${state.reminders.length})</h3>
+    <button class="btn btn-amber" onclick="sendBulk()">Send to All</button>
+  </div>${cards}`;
+}
+
+function renderModal() {
+  if(!state.showRemindModal) return "";
+  const c=state.showRemindModal;
+  const st=getStats(c.id);const ms=st.monthStats[state.selMonth]||{target:0,achieved:0,pct:0};
+  let preview="";
+  if(state.reminderType==="performance") preview=`Hi ${c.name},\n\nWeekly Performance Summary:\n• ${state.selMonth} Target: ${ms.target} | Achieved: ${ms.achieved} (${(ms.pct||0).toFixed(0)}%)\n• Overall: ${st.totalAchieved}/${st.totalTarget} (${st.pct.toFixed(0)}%)\n• Gap: ${st.totalTarget-st.totalAchieved} remaining\n\n— Admissions Head`;
+  else if(state.reminderType==="followup") preview=`Hi ${c.name},\n\nYou are at ${(ms.pct||0).toFixed(0)}% of your ${state.selMonth} target (${ms.achieved}/${ms.target}). ${ms.target-ms.achieved} remaining.\n\n— Admissions Head`;
+  else if(state.reminderType==="target") preview=`Hi ${c.name},\n\nOverall: ${st.pct.toFixed(0)}% (${st.totalAchieved}/${st.totalTarget}). ${st.pct<70?"Needs urgent attention.":"Keep pushing."}\n\n— Admissions Head`;
+
+  return `<div class="modal-overlay" onclick="state.showRemindModal=null;render()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <h3>📧 Remind ${c.name}</h3>
+      <div class="form-group"><label>Type</label>
+        <select onchange="state.reminderType=this.value;render()">
+          <option value="performance" ${state.reminderType==="performance"?"selected":""}>📊 Performance Summary</option>
+          <option value="followup" ${state.reminderType==="followup"?"selected":""}>🔄 Follow-up Alert</option>
+          <option value="target" ${state.reminderType==="target"?"selected":""}>🎯 Target Review</option>
+          <option value="custom" ${state.reminderType==="custom"?"selected":""}>✏️ Custom</option>
+        </select>
+      </div>
+      ${state.reminderType==="custom"?`<div class="form-group"><label>Message</label><textarea oninput="state.customMsg=this.value" placeholder="Type message...">${state.customMsg}</textarea></div>`:`<div class="preview-box"><strong>Preview:</strong><br>${preview}</div>`}
+      <div class="modal-actions">
+        <button class="btn btn-gray" onclick="state.showRemindModal=null;render()">Cancel</button>
+        <button class="btn btn-indigo" onclick="sendReminder(COUNSELORS.find(x=>x.id==='${c.id}'))">Send</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render() {
+  const tabs = [["input","✏️ Weekly Input"],["overview","📈 Overview"],["counselors","👥 Counselors"],["leaderboard","🏆 Leaderboard"],["reminders","📧 Reminders"]];
+  const tabsHTML = tabs.map(([k,l])=>`<button class="tab ${state.tab===k?'active':''}" onclick="state.tab='${k}';state.detailC=null;render()">${l}</button>`).join("");
+
+  let content = "";
+  if(state.tab==="input") content=renderInputTab();
+  else if(state.tab==="overview") content=renderOverview();
+  else if(state.tab==="counselors") content=renderCounselors();
+  else if(state.tab==="leaderboard") content=renderLeaderboard();
+  else if(state.tab==="reminders") content=renderReminders();
+
+  document.getElementById("app").innerHTML = `
+  ${state.toast?`<div class="toast">${state.toast}</div>`:""}
+  <div class="header">
+    <div class="header-row">
+      <div><h1>📊 Admissions Command Center</h1><p class="sub">AY 2025-26 • Total Target: <strong>1,570</strong> • Manual Weekly Entry</p></div>
+      <div class="btn-group">
+        <button class="btn btn-amber" onclick="sendBulk()">📧 Bulk Remind All</button>
+        <button class="btn btn-gray" onclick="resetData()">↻ Reset</button>
+      </div>
+    </div>
+    <div class="tabs">${tabsHTML}</div>
+  </div>
+  <div class="body">${content}</div>
+  ${renderModal()}`;
+}
+
+initData();
+render();
+</script>
+</body>
+</html>
