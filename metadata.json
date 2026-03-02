@@ -1,0 +1,5 @@
+{
+  "name": "Admissions Command Center",
+  "description": "Real-time performance tracking and target management for admissions teams, powered by Firebase.",
+  "requestFramePermissions": []
+}
